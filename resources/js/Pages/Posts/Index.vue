@@ -10,6 +10,14 @@ const form = useForm({
     title: '',
     content: ''
 })
+
+
+const submit = () => {
+    form.post(route('posts.store'),{
+        onSuccess: () => form.reset()
+    })
+}
+
 </script>
 <template>
     <Head title="Posts" />
@@ -29,8 +37,10 @@ const form = useForm({
                     <div class="p-6 text-gray-900">
                         <form @submit.prevent="submit" >
                             <input v-model="form.title" type="text" name="title" class="border rounded p2 w-full mb-2" placeholder="Title">
+                            <div v-if="form.errors.title" class="text-red-600">{{ form.errors.title }}</div>
 
-                            <textarea v-model="form.content" name="body" placeholder="Content" class="border rounded p2 w-full mb-2"></textarea>
+                            <textarea v-model="form.content" name="content" placeholder="Content" class="border rounded p2 w-full mb-2"></textarea>
+                            <div v-if="form.errors.content" class="text-red-600">{{ form.errors.content }}</div>
 
                             <button type="submit" class="ml-auto bg-blue-600 text-white py-2 px-4 rounded mb-3">Create</button>
                         </form>
