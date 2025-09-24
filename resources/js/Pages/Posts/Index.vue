@@ -1,22 +1,41 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, useForm } from '@inertiajs/vue3';
+
 defineProps({
     posts: Array
 })
+
+const form = useForm({
+    title: '',
+    content: ''
+})
 </script>
 <template>
+    <Head title="Posts" />
+
     <AuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
                 Posts
             </h2>
         </template>
-        <div class="py-12">
+        <template #actions>
+
+        </template>
+        <div class="py-5">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
+                        <form @submit.prevent="submit" >
+                            <input v-model="form.title" type="text" name="title" class="border rounded p2 w-full mb-2" placeholder="Title">
+
+                            <textarea v-model="form.content" name="body" placeholder="Content" class="border rounded p2 w-full mb-2"></textarea>
+
+                            <button type="submit" class="ml-auto bg-blue-600 text-white py-2 px-4 rounded mb-3">Create</button>
+                        </form>
                         <div class="border p-4 mb-2 rounded" v-for="post in posts" :key="post.id">
-                            <h2>{{ post.title }}</h2>
+                            <h2 class="font-bold text-lg">{{ post.title }}</h2>
                             <h2>{{ post.body }}</h2>
                         </div>
                     </div>
