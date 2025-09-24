@@ -25,7 +25,7 @@ const submit = () => {
     <AuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Posts
+                Posts  {{ $page.props.auth.user.name }}
             </h2>
         </template>
         <template #actions>
@@ -35,6 +35,12 @@ const submit = () => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
+                        <div v-if="$page.props.flash.success" class="mb-4 p-3 bg-green-100 text-green-800 rounded">
+                            {{ $page.props.flash.success }}
+                        </div>
+                        <div v-if="$page.props.flash.errors" class="mb-4 p-3 bg-red-100 text-red-800 rounded">
+                            {{ $page.props.flash.errors }}
+                        </div>
                         <form @submit.prevent="submit" >
                             <input v-model="form.title" type="text" name="title" class="border rounded p2 w-full mb-2" placeholder="Title">
                             <div v-if="form.errors.title" class="text-red-600">{{ form.errors.title }}</div>
