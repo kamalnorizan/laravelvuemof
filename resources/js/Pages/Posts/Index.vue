@@ -5,6 +5,7 @@ import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import EasyDataTable from 'vue3-easy-data-table';
 import Swal from 'sweetalert2';
+import PostForm from './PostForm.vue'
 
 defineProps({
     posts: Array
@@ -126,31 +127,18 @@ function deletePost(id) {
                         <div v-if="$page.props.flash.errors" class="mb-4 p-3 bg-red-100 text-red-800 rounded">
                             {{ $page.props.flash.errors }}
                         </div>
-                        <form @submit.prevent="submit">
-                            <input v-model="form.title" type="text" name="title" class="border rounded p2 w-full mb-2"
-                                placeholder="Title">
-                            <div v-if="form.errors.title" class="text-red-600">{{ form.errors.title }}</div>
 
-                            <textarea v-model="form.content" name="content" placeholder="Content"
-                                class="border rounded p2 w-full mb-2"></textarea>
-                            <div v-if="form.errors.content" class="text-red-600">{{ form.errors.content }}</div>
+                        <PostForm :submit="submit" :form="form" :create="create" />
 
-
-                            <input type="hidden" name="id" v-model="form.id">
-
-
-                            <button type="submit" v-if="create"
-                                class="ml-auto bg-blue-600 text-white py-2 px-4 rounded mb-3">Create</button>
-                            <button type="submit" v-else
-                                class="ml-auto bg-yellow-600 text-white py-2 px-4 rounded mb-3">Update</button>
-                        </form>
                         <input v-model="search" type="text" placeholder="Search posts..."
                             class="border rounded p-2 w-full mb-4">
                         <EasyDataTable :headers="headers" :items="items" v-model:server-options="serverOptions"
                             @update:server-options="loadData" :server-items-length="totalRows"
                             :rows-items="[10, 25, 50, 100]" alternatin border-cell>
                             <template #item-actions="{ actions }">
-                                <button @click="editPost(actions.id)"
+                                <a :href="route('posts.show',actions.id)"
+                                    class="bg-green-500 text-white px-2 py-1 rounded">Show</a>
+                                &nbsp;<button @click="editPost(actions.id)"
                                     class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
                                 &nbsp;<button @click="deletePost(actions.id)"
                                     class="bg-red-600 text-white px-2 py-1 rounded">Delete</button>
