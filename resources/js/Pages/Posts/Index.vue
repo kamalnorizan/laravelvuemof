@@ -11,8 +11,8 @@ defineProps({
 
 const headers = [
     { text: 'ID', value: 'id' },
-    { text: 'Title', value: 'title' },
-    { text: 'Created By', value: 'created_by' },
+    { text: 'Title', value: 'title', sortable: true },
+    { text: 'Created By', value: 'created_by', sortable: true  },
     { text: 'Actions', value: 'actions' },
 ];
 
@@ -30,16 +30,34 @@ const submit = () => {
 
 const items = ref([]);
 const totalRows = ref(0);
+
 const serverOptions = ref({
     page: 1,
-    rowsPerPage: 10
+    rowsPerPage: 10,
+    sortBy: 'title',
+    sortType: 'asc',
 });
 
 const loadData = async () => {
+    const columns = headers.map(h =>({
+        data: h.value,
+        name: h.value,
+        searchable: !!h.searchable,
+        orderable: !!h.sortable,
+        search: {value : ''}
+    }));
+
+    const order = serverOptions.value.sortBy == null ? 1 : headers.findIndex(h => h.value=== serverOptions.value.sortBy);
+    const type = serverOptions.value.sortBy == null ? 'asc' : serverOptions.value.sortType;
+
     const { data } = await axios.get(route('posts.data'), {
         params: {
+            columns,
             start: (serverOptions.value.page - 1) * serverOptions.value.rowsPerPage,
             length: serverOptions.value.rowsPerPage,
+            'columns[1][data]' : 'title',
+            'order[0][column]' : order,
+            'order[0][dir]' : type,
         }
     })
     items.value = data.data
@@ -58,9 +76,6 @@ onMounted(loadData);
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
                 Posts {{ $page.props.auth.user.name }}
             </h2>
-        </template>
-        <template #actions>
-
         </template>
         <div class="py-5">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -90,8 +105,9 @@ onMounted(loadData);
                         :items="items"
                         v-model:server-options="serverOptions"
                         @update:server-options="loadData" :server-items-length="totalRows"
+                        :rows-items="[10, 25, 50, 100]"
                         alternatin
-                        border-cell></EasyDataTable>
+                        border-cell />
                     </div>
                 </div>
             </div>
@@ -100,4 +116,5 @@ onMounted(loadData);
 </template>
 <style>
 @import "vue3-easy-data-table/dist/style.css";
+
 </style>
