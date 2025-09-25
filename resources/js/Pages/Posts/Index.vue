@@ -3,7 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
-import EasyDataTable from 'vue3-easy-data-table'
+import EasyDataTable from 'vue3-easy-data-table';
+import Swal from 'sweetalert2';
 
 defineProps({
     posts: Array
@@ -40,7 +41,6 @@ const serverOptions = ref({
     sortBy: 'title',
     sortType: 'asc',
 });
-
 const loadData = async () => {
     const columns = headers.map(h => ({
         data: h.value,
@@ -69,7 +69,6 @@ const loadData = async () => {
 }
 
 onMounted(loadData);
-
 watch(search, () => {
     serverOptions.value.page = 1;
     loadData();
@@ -85,19 +84,36 @@ function editPost(id) {
 }
 
 function deletePost(id) {
-    alert('Delete' + id);
-}
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This action cannot be undone',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(route('posts.destroy', id)).then(() => {
+                items.value = items.value.filter(p => p.id !== id);
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Your post has been deleted.',
+                    icon: 'success',
+                });
 
+            });
+        }
+    });
+}
 
 </script>
 <template>
-
     <Head title="Posts" />
-
     <AuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Posts {{ $page.props.auth.user.name }}
+                Posts
             </h2>
         </template>
         <div class="py-5">

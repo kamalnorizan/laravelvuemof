@@ -53,4 +53,12 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', $msg);
 
     }
+
+    public function destroy($id)
+    {
+        Post::destroy($id);
+        $msg = 'Post deleted successfully.';
+        return response()->json(['success' => true, 'message' => $msg]);
+
+    }
 }

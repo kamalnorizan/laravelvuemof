@@ -21,6 +21,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "sweetalert2": "^11.23.0",
         "vue3-easy-data-table": "^1.5.47"
     }
 }
