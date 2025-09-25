@@ -18,19 +18,21 @@ const headers = [
 
 const form = useForm({
     title: '',
-    content: ''
+    content: '',
+    id: ''
 })
 
 
 const submit = () => {
     form.post(route('posts.store'), {
-        onSuccess: () => form.reset()
+        onSuccess: () => { form.reset(); create = true; loadData(); }
     })
 }
 
 const items = ref([]);
 const totalRows = ref(0);
 const search = ref('');
+let create = ref(true);
 
 const serverOptions = ref({
     page: 1,
@@ -74,7 +76,12 @@ watch(search, () => {
 });
 
 function editPost(id) {
-    alert(id);
+    const post = items.value.find(p => p.id === id);
+    console.log(post);
+    form.title = post.title;
+    form.content = post.body;
+    form.id = id;
+    create = false;
 }
 
 function deletePost(id) {
@@ -112,8 +119,14 @@ function deletePost(id) {
                                 class="border rounded p2 w-full mb-2"></textarea>
                             <div v-if="form.errors.content" class="text-red-600">{{ form.errors.content }}</div>
 
-                            <button type="submit"
+
+                            <input type="hidden" name="id" v-model="form.id">
+
+
+                            <button type="submit" v-if="create"
                                 class="ml-auto bg-blue-600 text-white py-2 px-4 rounded mb-3">Create</button>
+                            <button type="submit" v-else
+                                class="ml-auto bg-yellow-600 text-white py-2 px-4 rounded mb-3">Update</button>
                         </form>
                         <input v-model="search" type="text" placeholder="Search posts..."
                             class="border rounded p-2 w-full mb-4">

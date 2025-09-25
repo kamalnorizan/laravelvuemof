@@ -24,8 +24,6 @@ class PostController extends Controller
             })
             ->addColumn('actions', function($post) {
                 return [
-                    'edit_url' => route('posts.edit', $post->id),
-                    'delete_url' => route('posts.destroy', $post->id),
                     'id' => $post->id,
                 ];
             })
@@ -39,13 +37,20 @@ class PostController extends Controller
             'content' => 'required|string',
         ]);
 
-        $post = new Post;
+        if($request->id && $request->id != ''){
+            $post = Post::find($request->id);
+            $msg = 'Post updated successfully.';
+        }else{
+            $post = new Post;
+            $post->author = auth()->id();
+            $msg = 'Post created successfully.';
+        }
+
         $post->title = $request->title;
         $post->body = $request->content;
-        $post->author = auth()->id();
         $post->save();
 
-        return redirect()->route('posts.index')->with('success', 'Post created successfully.');
+        return redirect()->route('posts.index')->with('success', $msg);
 
     }
 }
