@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import EasyDataTable from 'vue3-easy-data-table'
 
@@ -10,10 +10,10 @@ defineProps({
 })
 
 const headers = [
-    { text: 'ID', value: 'id' },
-    { text: 'Title', value: 'title', sortable: true },
-    { text: 'Created By', value: 'created_by', sortable: true  },
-    { text: 'Actions', value: 'actions' },
+    { text: 'ID', value: 'id', name: 'id' },
+    { text: 'Title', value: 'title', name: 'title', sortable: true, searchable: true },
+    { text: 'Created By', value: 'created_by', name: 'user.name', sortable: true, searchable: true  },
+    { text: 'Actions', value: 'actions', name: '' },
 ];
 
 const form = useForm({
@@ -30,6 +30,7 @@ const submit = () => {
 
 const items = ref([]);
 const totalRows = ref(0);
+const search = ref('');
 
 const serverOptions = ref({
     page: 1,
@@ -41,7 +42,7 @@ const serverOptions = ref({
 const loadData = async () => {
     const columns = headers.map(h =>({
         data: h.value,
-        name: h.value,
+        name: h.name,
         searchable: !!h.searchable,
         orderable: !!h.sortable,
         search: {value : ''}
@@ -54,6 +55,7 @@ const loadData = async () => {
         params: {
             columns,
             start: (serverOptions.value.page - 1) * serverOptions.value.rowsPerPage,
+            'search[value]': search.value,
             length: serverOptions.value.rowsPerPage,
             'columns[1][data]' : 'title',
             'order[0][column]' : order,
@@ -65,6 +67,11 @@ const loadData = async () => {
 }
 
 onMounted(loadData);
+
+watch(search, () => {
+    serverOptions.value.page = 1;
+    loadData();
+});
 
 </script>
 <template>
@@ -99,7 +106,7 @@ onMounted(loadData);
                             <button type="submit"
                                 class="ml-auto bg-blue-600 text-white py-2 px-4 rounded mb-3">Create</button>
                         </form>
-
+                        <input v-model="search" type="text" placeholder="Search posts..." class="border rounded p-2 w-full mb-4">
                         <EasyDataTable
                         :headers="headers"
                         :items="items"
