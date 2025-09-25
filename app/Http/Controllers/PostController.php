@@ -15,6 +15,11 @@ class PostController extends Controller
         return Inertia::render('Posts/Index', ['posts' => Post::latest()->get()]);
     }
 
+    public function show(Post $post)
+    {
+        return Inertia::render('Posts/Show', ['posts' => $post]);
+    }
+
     public function data(Request $request){
         $posts = Post::with('user');
 
