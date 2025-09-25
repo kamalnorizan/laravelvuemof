@@ -85,24 +85,19 @@ onMounted(loadData);
                                 class="ml-auto bg-blue-600 text-white py-2 px-4 rounded mb-3">Create</button>
                         </form>
 
-                        <EasyDataTable :headers="headers" :items="items" v-model:server-options="serverOptions"
-                            @update:server-options="server - options" :server-items-length="totalRows" alternating
-                            border-cell table-class-name="custom-table" header-class-name="custom-header"></EasyDataTable>
+                        <EasyDataTable
+                        :headers="headers"
+                        :items="items"
+                        v-model:server-options="serverOptions"
+                        @update:server-options="loadData" :server-items-length="totalRows"
+                        alternatin
+                        border-cell></EasyDataTable>
                     </div>
                 </div>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
-<style scoped>
+<style>
 @import "vue3-easy-data-table/dist/style.css";
-
-.custom-table {
-    border-radius: 8px;
-    overflow: hidden
-}
-
-.custom-header{
-    background-color: #ff0000!important;
-}
 </style>
