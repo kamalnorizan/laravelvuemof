@@ -16,9 +16,12 @@ class PostController extends Controller
     }
 
     public function data(Request $request){
-        $posts = Post::query();
+        $posts = Post::with('user');
 
         return DataTables::eloquent($posts)
+            ->addColumn('created_by', function($post){
+                return $post->user->name;
+            })
             ->addColumn('actions', function($post){
                 return '';
             })
