@@ -12,7 +12,7 @@ defineProps({
 const headers = [
     { text: 'ID', value: 'id', name: 'id' },
     { text: 'Title', value: 'title', name: 'title', sortable: true, searchable: true },
-    { text: 'Created By', value: 'created_by', name: 'user.name', sortable: true, searchable: true  },
+    { text: 'Created By', value: 'created_by', name: 'user.name', sortable: true, searchable: true },
     { text: 'Actions', value: 'actions', name: '' },
 ];
 
@@ -40,15 +40,15 @@ const serverOptions = ref({
 });
 
 const loadData = async () => {
-    const columns = headers.map(h =>({
+    const columns = headers.map(h => ({
         data: h.value,
         name: h.name,
         searchable: !!h.searchable,
         orderable: !!h.sortable,
-        search: {value : ''}
+        search: { value: '' }
     }));
 
-    const order = serverOptions.value.sortBy == null ? 1 : headers.findIndex(h => h.value=== serverOptions.value.sortBy);
+    const order = serverOptions.value.sortBy == null ? 1 : headers.findIndex(h => h.value === serverOptions.value.sortBy);
     const type = serverOptions.value.sortBy == null ? 'asc' : serverOptions.value.sortType;
 
     const { data } = await axios.get(route('posts.data'), {
@@ -57,9 +57,9 @@ const loadData = async () => {
             start: (serverOptions.value.page - 1) * serverOptions.value.rowsPerPage,
             'search[value]': search.value,
             length: serverOptions.value.rowsPerPage,
-            'columns[1][data]' : 'title',
-            'order[0][column]' : order,
-            'order[0][dir]' : type,
+            'columns[1][data]': 'title',
+            'order[0][column]': order,
+            'order[0][dir]': type,
         }
     })
     items.value = data.data
@@ -72,6 +72,15 @@ watch(search, () => {
     serverOptions.value.page = 1;
     loadData();
 });
+
+function editPost(id) {
+    alert(id);
+}
+
+function deletePost(id) {
+    alert('Delete' + id);
+}
+
 
 </script>
 <template>
@@ -106,15 +115,18 @@ watch(search, () => {
                             <button type="submit"
                                 class="ml-auto bg-blue-600 text-white py-2 px-4 rounded mb-3">Create</button>
                         </form>
-                        <input v-model="search" type="text" placeholder="Search posts..." class="border rounded p-2 w-full mb-4">
-                        <EasyDataTable
-                        :headers="headers"
-                        :items="items"
-                        v-model:server-options="serverOptions"
-                        @update:server-options="loadData" :server-items-length="totalRows"
-                        :rows-items="[10, 25, 50, 100]"
-                        alternatin
-                        border-cell />
+                        <input v-model="search" type="text" placeholder="Search posts..."
+                            class="border rounded p-2 w-full mb-4">
+                        <EasyDataTable :headers="headers" :items="items" v-model:server-options="serverOptions"
+                            @update:server-options="loadData" :server-items-length="totalRows"
+                            :rows-items="[10, 25, 50, 100]" alternatin border-cell>
+                            <template #item-actions="{ actions }">
+                                <button @click="editPost(actions.id)"
+                                    class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+                                &nbsp;<button @click="deletePost(actions.id)"
+                                    class="bg-red-600 text-white px-2 py-1 rounded">Delete</button>
+                            </template>
+                        </EasyDataTable>
                     </div>
                 </div>
             </div>
@@ -123,5 +135,4 @@ watch(search, () => {
 </template>
 <style>
 @import "vue3-easy-data-table/dist/style.css";
-
 </style>

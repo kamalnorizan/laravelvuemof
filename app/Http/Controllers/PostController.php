@@ -19,13 +19,16 @@ class PostController extends Controller
         $posts = Post::with('user');
 
         return DataTables::eloquent($posts)
-            ->addColumn('created_by', function($post){
+            ->addColumn('created_by', function($post) {
                 return $post->user->name;
             })
-            ->addColumn('actions', function($post){
-                return '';
+            ->addColumn('actions', function($post) {
+                return [
+                    'edit_url' => route('posts.edit', $post->id),
+                    'delete_url' => route('posts.destroy', $post->id),
+                    'id' => $post->id,
+                ];
             })
-            ->rawColumns(['actions'])
             ->make(true);
     }
 
